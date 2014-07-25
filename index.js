@@ -4,9 +4,10 @@
  *
  * changelog
  * 2014-07-21[13:28:03]:authorized
+ * 2014-07-25[09:23:34]:add ignoreMissing
  *
  * @author yanni4night@gmail.com
- * @version 0.1.0
+ * @version 0.1.1
  * @since 0.1.0
  */
 /*jslint node: true */
@@ -20,7 +21,8 @@ var native_ownprop = ({}).hasOwnProperty;
 function Stamper(options) {
     var opt = {
         encoding: 'utf-8',
-        baseDir:'.',
+        ignoreMissing: false,
+        baseDir: '.',
         crypto: 'md5' //'md5', 'sha1', 'sha256', 'sha512'
     };
 
@@ -42,15 +44,17 @@ Stamper.prototype = {
             return this.stampCache[path];
         }
         try {
-            var content = fs.readFileSync(sysPath.join(this.opt.baseDir,path), {
+            var content = fs.readFileSync(sysPath.join(this.opt.baseDir, path), {
                 encoding: this.opt.encoding
             });
             var md5 = crypto.createHash(this.opt.crypto).update(content).digest('hex');
-            md5 = (parseInt(md5, 16) % 1e+6) | 0;
+            md5 = (parseInt(md5, 16) % 1e6) | 0;
             this.stampCache[path] = md5;
             return md5;
         } catch (e) {
-            console.warn(e);
+            if (!this.opt.ignoreMissing) {
+                console.warn(e);
+            }
             return null;
         }
     }
