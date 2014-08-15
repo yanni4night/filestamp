@@ -42,21 +42,23 @@ function Stamper(options) {
 Stamper.prototype = {
     compute: function(path, relative) {
         var filepath, content, md5;
-        if (this.stampCache[path]) {
-            return this.stampCache[path];
-        }
+        
         try {
-            if ('string' !== typeof relative || !relative instanceof String) {
+            if ('string' !== typeof relative && !(relative instanceof String)) {
+                
                 filepath = sysPath.join(this.opt.baseDir, path);
             } else {
                 filepath = sysPath.join(relative, path);
+            }
+            if (this.stampCache[filepath]) {
+                return this.stampCache[filepath];
             }
             content = fs.readFileSync(filepath, {
                 encoding: this.opt.encoding
             });
             md5 = crypto.createHash(this.opt.crypto).update(content).digest('hex');
             md5 = (parseInt(md5, 16) % 1e6) | 0;
-            this.stampCache[path] = md5;
+            this.stampCache[filepath] = md5;
             return md5;
         } catch (e) {
             if (!this.opt.ignoreMissing) {
