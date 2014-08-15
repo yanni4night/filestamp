@@ -30,8 +30,7 @@ exports.stamp = {
     },
     js: function(test) {
         var s = new Stamper();
-        var stamp = s.compute('./package.json');
-        grunt.log.ok(stamp);
+        var stamp = s.compute('./package.json','./');
         test.ok(!!stamp, 'Stamp computed');
         test.done();
     }

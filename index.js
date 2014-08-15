@@ -5,9 +5,10 @@
  * changelog
  * 2014-07-21[13:28:03]:authorized
  * 2014-07-25[09:23:34]:add ignoreMissing
+ * 2014-08-15[22:22:43]:support relative path
  *
  * @author yanni4night@gmail.com
- * @version 0.1.1
+ * @version 0.1.2
  * @since 0.1.0
  */
 /*jslint node: true */
@@ -39,15 +40,21 @@ function Stamper(options) {
 }
 
 Stamper.prototype = {
-    compute: function(path) {
+    compute: function(path, relative) {
+        var filepath, content, md5;
         if (this.stampCache[path]) {
             return this.stampCache[path];
         }
         try {
-            var content = fs.readFileSync(sysPath.join(this.opt.baseDir, path), {
+            if ('string' !== typeof relative || !relative instanceof String) {
+                filepath = sysPath.join(this.opt.baseDir, path);
+            } else {
+                filepath = sysPath.join(relative, path);
+            }
+            content = fs.readFileSync(filepath, {
                 encoding: this.opt.encoding
             });
-            var md5 = crypto.createHash(this.opt.crypto).update(content).digest('hex');
+            md5 = crypto.createHash(this.opt.crypto).update(content).digest('hex');
             md5 = (parseInt(md5, 16) % 1e6) | 0;
             this.stampCache[path] = md5;
             return md5;
