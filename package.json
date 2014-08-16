@@ -1,6 +1,6 @@
 {
   "name": "filestamp",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "compute file stamp",
   "main": "index.js",
   "repository": {
@@ -20,5 +20,8 @@
     "grunt": "^0.4.5",
     "grunt-contrib-jshint": "^0.10.0",
     "grunt-contrib-nodeunit": "^0.4.1"
+  },
+  "dependencies": {
+    "extend": "~1.3.0"
   }
 }
