@@ -1,11 +1,15 @@
 {
   "name": "filestamp",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "compute file stamp",
   "main": "index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/yanni4night/filestamp"
+  },
+  "scripts": {
+    "test": "grunt test",
+    "coveralls": "istanbul cover -- grunt test && grunt coveralls"
   },
   "keywords": [
     "stamp"
@@ -17,11 +21,14 @@
   },
   "homepage": "https://github.com/yanni4night/filestamp",
   "devDependencies": {
-    "grunt": "^0.4.5",
-    "grunt-contrib-jshint": "^0.10.0",
-    "grunt-contrib-nodeunit": "^0.4.1"
+    "grunt": "~0.4.5",
+    "grunt-contrib-jshint": "~0.10.0",
+    "grunt-contrib-nodeunit": "~0.4.1",
+    "grunt-coveralls": "~1.0.0",
+    "load-grunt-tasks": "~1.0.0",
+    "time-grunt": "~1.0.0"
   },
   "dependencies": {
-    "extend": "~1.3.0"
+    "extend": "~2.0.0"
   }
 }
