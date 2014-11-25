@@ -18,6 +18,9 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     jshint: {
+      options: {
+        jshintrc: '.jshintrc'
+      },
       js: ['index.js']
     },
     nodeunit: {

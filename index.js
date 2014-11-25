@@ -12,7 +12,7 @@
  * @version 0.1.3
  * @since 0.1.0
  */
-/*jslint node: true */
+
 'use strict';
 var crypto = require('crypto');
 var fs = require('fs');
