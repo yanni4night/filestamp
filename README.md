@@ -2,7 +2,7 @@ filestamp
 =========
 [![NPM version][npm-image]][npm-url] [![Downloads][downloads-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Build status][appveyor-image]][appveyor-url] [![Dependency status][david-dm-image]][david-dm-url] [![De vDependency status][david-dm-dev-image]][david-dm-dev-url] [![Coverage Status][coveralls-image]][coveralls-url] [![Built with Grunt][grunt-image]][grunt-url]
 
-compute the stamp of a file
+Compute the stamp of a file by md5/sha1/sha256/sha512.
 
 
 usage
@@ -25,4 +25,4 @@ usage
 [coveralls-url]:https://coveralls.io/r/yanni4night/filestamp?branch=master
 [coveralls-image]:https://coveralls.io/repos/yanni4night/filestamp/badge.png?branch=master
 [grunt-url]:http://gruntjs.com/
-[grunt-image]: http://img.shields.io/badge/BUILT%20WITH-GRUNT-yellow.svg
+[grunt-image]: https://cdn.gruntjs.com/builtwith.png

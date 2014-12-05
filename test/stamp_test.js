@@ -1,6 +1,7 @@
 'use strict';
 
 var grunt = require('grunt');
+var fs = require('fs');
 var Stamper = require('../index');
 
 /*
@@ -28,10 +29,30 @@ exports.stamp = {
         // setup here if necessary
         done();
     },
-    js: function(test) {
+    normal: function(test) {
         var s = new Stamper();
-        var stamp = s.compute('./package.json','./');
-        test.ok(!!stamp, 'Stamp computed');
+        var stamp = s.compute('./package.json', './');
+        test.ok(!!stamp, 'Stamp should be computed');
+        test.done();
+    },
+    cache: function(test) {
+        var s = new Stamper(),
+            file = 'test.cache';
+        fs.writeFileSync(file, 'mark-1');
+        var stamp = s.compute(file);
+        fs.writeFileSync(file, 'mark-2');
+        test.deepEqual(stamp, s.compute(file), 'Stamp should be cached');
+        test.done();
+    },
+    nocache: function(test) {
+        var s = new Stamper({
+                cache: false
+            }),
+            file = 'test.cache';
+        fs.writeFileSync(file, 'mark-1');
+        var stamp = s.compute(file);
+        fs.writeFileSync(file, 'mark-2');
+        test.notEqual(stamp, s.compute(file), 'Stamp should not be cached');
         test.done();
     }
 };
