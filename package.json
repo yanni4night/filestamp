@@ -1,7 +1,7 @@
 {
   "name": "filestamp",
-  "version": "0.1.5",
-  "description": "compute file stamp",
+  "version": "0.2.0",
+  "description": "Compute files' timestamp",
   "main": "index.js",
   "repository": {
     "type": "git",
