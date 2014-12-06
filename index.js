@@ -22,36 +22,54 @@ var extend = require('extend');
 var sysPath = require('path');
 
 /**
+ * Get digest from content.
+ *
+ * @param  {Mixin} content
+ * @param  {String} algorithm
+ * @return {String}
+ * @since 0.1.5
+ */
+function getDigest(content, algorithm) {
+    var digest = crypto.createHash(algorithm).update(content).digest('hex');
+    /*jshint bitwise:false*/
+    return (parseInt(digest, 16) % 1e6) | 0;
+}
+
+/**
  * Compute the stamp of a file.
  * If cb exists as a function,it will be called.
  *
  * @param  {String} filepath
- * @param  {String} algorithm
+ * @param  {String}[Optional] algorithm
  * @param  {Function} cb
  * @return {String}
+ * @since 0.1.5
  */
 function compute(filepath, algorithm, cb) {
-    var digest, content;
 
     if (2 === arguments.length && 'function' === typeof algorithm) {
         cb = algorithm;
         algorithm = null;
     }
 
-    try {
-        content = fs.readFileSync(filepath);
-        digest = crypto.createHash(algorithm || 'md5').update(content).digest('hex');
-        /*jshint bitwise:false*/
-        digest = (parseInt(digest, 16) % 1e6) | 0;
-    } catch (e) {
-        digest = null;
-    }
+    algorithm = algorithm || 'md5';
 
-    if ('function' === typeof cb) {
-        return cb(digest);
-    }
+    //async mode
+    if (cb) {
+        return fs.readFile(filepath, function(error, content) {
+            if (error) {
+                return cb(error);
+            }
 
-    return digest;
+            try {
+                cb(null, getDigest(content, algorithm));
+            } catch (e) {
+                cb(e);
+            }
+        });
+    }
+    //sync mode
+    return getDigest(fs.readFileSync(filepath), algorithm);
 }
 
 /**
@@ -81,10 +99,16 @@ Stamper.prototype = {
      *
      * @param  {String} path     The file path to be stamped.
      * @param  {String} relative Relative baseDir.
+     * @param  {Function} cb
      * @return {String}         Stamp string if file exists,or else null.
      */
-    compute: function(path, relative) {
+    compute: function(path, relative, cb) {
         var filepath, digest;
+
+        if (2 === arguments.length && 'function' === typeof relative) {
+            cb = relative;
+            relative = null;
+        }
 
         if ('string' !== typeof relative && !(relative instanceof String)) {
             filepath = sysPath.join(this.opt.baseDir, path);
@@ -93,12 +117,27 @@ Stamper.prototype = {
         }
 
         if (this.opt.cache && this.stampCache[filepath]) {
-            return this.stampCache[filepath];
+            if (cb) {
+                cb(null, this.stampCache[filepath]);
+                return;
+            } else {
+                return this.stampCache[filepath];
+            }
         }
 
-        digest = compute(filepath);
+        if (cb) {
+            compute(filepath, this.opt.crypto || this.opt.algorithm, function(error, digest) {
+                if (digest && this.opt.cache) {
+                    this.stampCache[filepath] = digest;
+                }
+                cb.apply(null, arguments);
+            }.bind(this));
+            return;
+        }
 
-        if (this.opt.cache && digest) {
+        digest = compute(filepath, this.opt.crypto || this.opt.algorithm);
+
+        if (digest && this.opt.cache) {
             this.stampCache[filepath] = digest;
         }
 

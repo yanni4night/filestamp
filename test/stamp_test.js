@@ -32,9 +32,14 @@ exports.stamp = {
     },
     normal: function(test) {
         var s = new Stamper();
+        //sync
         var stamp = s.compute('./package.json', './');
         test.ok(!!stamp, 'Stamp should be computed');
-        test.done();
+        //async
+        s.compute('package.json', function(err, digest) {
+            test.deepEqual(digest, stamp, 'Stamp should get the same under async mode');
+            test.done();
+        });
     },
     cache: function(test) {
         var s = new Stamper(),
@@ -42,7 +47,7 @@ exports.stamp = {
         fs.writeFileSync(file, 'mark-1');
         var stamp = s.compute(file);
         fs.writeFileSync(file, 'mark-2');
-        test.deepEqual(stamp, s.compute(file), 'Stamp should be cached');
+        test.deepEqual(stamp, s.compute(file), 'Stamp should be same even changed bacause of caching');
         test.done();
     },
     nocache: function(test) {
@@ -57,18 +62,22 @@ exports.stamp = {
         test.done();
     },
     singleCall: function(test) {
-        test.expect(3);
-        test.ok(!!Stamper.compute('package.json'), 'Stamp should be computed in relative path');
-        test.ok(!!Stamper.compute(path.join(__dirname, '..', 'package.json')), 'Stamp should be computed in absolute path');
-        Stamper.compute('package.json', function(digest) {
-            test.ok(!!digest, 'should computed in async mode');
+        var ps;
+        test.ok(!!(ps = Stamper.compute('package.json', 'sha1')), 'Stamp should be computed in relative path');
+
+        test.deepEqual(ps, Stamper.compute(path.join(__dirname, '..', 'package.json'), 'sha1'), 'Stamp should be computed in absolute path');
+
+        Stamper.compute('package.json', 'sha1', function(err, digest) {
+            test.deepEqual(ps, digest, 'should computed in async mode');
             test.done();
         });
 
     },
     missing: function(test) {
         test.expect(1);
-        test.deepEqual(null, Stamper.compute(Date.now()), 'should get null if file missing')
+        test.throws(function() {
+            Stamper.compute(Date.now())
+        }, 'should throw error if file missing or something error occured')
         test.done();
     }
 };
