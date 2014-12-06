@@ -23,22 +23,35 @@ var sysPath = require('path');
 
 /**
  * Compute the stamp of a file.
+ * If cb exists as a function,it will be called.
+ *
  * @param  {String} filepath
  * @param  {String} algorithm
+ * @param  {Function} cb
  * @return {String}
  */
-function compute(filepath, algorithm) {
+function compute(filepath, algorithm, cb) {
     var digest, content;
+
+    if (2 === arguments.length && 'function' === typeof algorithm) {
+        cb = algorithm;
+        algorithm = null;
+    }
 
     try {
         content = fs.readFileSync(filepath);
         digest = crypto.createHash(algorithm || 'md5').update(content).digest('hex');
+        /*jshint bitwise:false*/
+        digest = (parseInt(digest, 16) % 1e6) | 0;
     } catch (e) {
-        return null;
+        digest = null;
     }
 
-    /*jshint bitwise:false*/
-    return (parseInt(digest, 16) % 1e6) | 0;
+    if ('function' === typeof cb) {
+        return cb(digest);
+    }
+
+    return digest;
 }
 
 /**

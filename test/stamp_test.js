@@ -57,10 +57,14 @@ exports.stamp = {
         test.done();
     },
     singleCall: function(test) {
-        test.expect(2);
+        test.expect(3);
         test.ok(!!Stamper.compute('package.json'), 'Stamp should be computed in relative path');
         test.ok(!!Stamper.compute(path.join(__dirname, '..', 'package.json')), 'Stamp should be computed in absolute path');
-        test.done();
+        Stamper.compute('package.json', function(digest) {
+            test.ok(!!digest, 'should computed in async mode');
+            test.done();
+        });
+
     },
     missing: function(test) {
         test.expect(1);
