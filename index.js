@@ -8,9 +8,10 @@
  * 2014-08-15[22:22:43]:support relative path
  * 2014-08-16[17:28:25]:extend
  * 2014-12-06[01:53:08]:add a cache option
+ * 2014-12-06[12:52:45]:define the core compute function,remove 'encoding'
  *
  * @author yanni4night@gmail.com
- * @version 0.1.4
+ * @version 0.1.5
  * @since 0.1.0
  */
 
@@ -21,6 +22,20 @@ var extend = require('extend');
 var sysPath = require('path');
 
 /**
+ * Compute the stamp of a file.
+ * @param  {String} filepath
+ * @param  {String} algorithm
+ * @return {String}
+ */
+function compute(filepath, algorithm) {
+    var md5, content = fs.readFileSync(filepath);
+
+    md5 = crypto.createHash(algorithm || 'md5').update(content).digest('hex');
+    /*jshint bitwise:false*/
+    return (parseInt(md5, 16) % 1e6) | 0;
+}
+
+/**
  * Stamp with cache
  *
  * @param {Object} options
@@ -28,7 +43,6 @@ var sysPath = require('path');
  */
 function Stamper(options) {
     var opt = {
-        encoding: 'utf-8',
         ignoreMissing: false,
         baseDir: '.',
         cache: true,
@@ -38,6 +52,8 @@ function Stamper(options) {
     this.opt = extend(opt, options || {});
     this.stampCache = {};
 }
+
+Stamper.compute = compute;
 
 Stamper.prototype = {
     /**
@@ -49,7 +65,7 @@ Stamper.prototype = {
      * @return {String}         Stamp string if file exists,or else null.
      */
     compute: function(path, relative) {
-        var filepath, content, md5;
+        var filepath, md5;
 
         try {
 
@@ -63,12 +79,7 @@ Stamper.prototype = {
                 return this.stampCache[filepath];
             }
 
-            content = fs.readFileSync(filepath, {
-                encoding: this.opt.encoding
-            });
-
-            md5 = crypto.createHash(this.opt.crypto).update(content).digest('hex');
-            md5 = (parseInt(md5, 16) % 1e6) | 0;
+            md5 = compute(filepath);
 
             if (this.opt.cache) {
                 this.stampCache[filepath] = md5;

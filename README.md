@@ -7,9 +7,15 @@ Compute the stamp of a file by md5/sha1/sha256/sha512.
 
 usage
 =========
+    
+    //Create a stamper object
     var Stamper = require('filestamp');
-    var stamper = new Stamper({encoding:'utf-8',crypto:'md5',baseDir:'.'});
-    console.log(stamper.compute('./package.json',"./"));
+    var stamper = new Stamper({crypto:'md5', baseDir:'.'});
+    stamper.compute('./package.json');
+    stamper.compute('./stamp_test.js',"test");
+    //Or call compute directly
+    Stamper.compute('./package.json','sha1');
+
 
 [npm-url]: https://npmjs.org/package/filestamp
 [downloads-image]: http://img.shields.io/npm/dm/filestamp.svg

@@ -2,6 +2,7 @@
 
 var grunt = require('grunt');
 var fs = require('fs');
+var path = require('path');
 var Stamper = require('../index');
 
 /*
@@ -53,6 +54,12 @@ exports.stamp = {
         var stamp = s.compute(file);
         fs.writeFileSync(file, 'mark-2');
         test.notEqual(stamp, s.compute(file), 'Stamp should not be cached');
+        test.done();
+    },
+    singleCall: function(test) {
+        test.expect(2);
+        test.ok(!!Stamper.compute('package.json'), 'Stamp should be computed in relative path');
+        test.ok(!!Stamper.compute(path.join(__dirname, '..', 'package.json')), 'Stamp should be computed in absolute path');
         test.done();
     }
 };
