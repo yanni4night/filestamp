@@ -21,6 +21,12 @@ var fs = require('fs');
 var extend = require('extend');
 var sysPath = require('path');
 
+var ALGORITHMS = ['md5', 'sha1', 'sha256', 'sha512'];
+
+function getSupportedAlgorithms() {
+    return ALGORITHMS.slice(0);
+}
+
 /**
  * Get digest from content.
  *
@@ -83,14 +89,20 @@ function Stamper(options) {
         ignoreError: false,
         baseDir: '.',
         cache: true,
-        crypto: 'md5' //'md5', 'sha1', 'sha256', 'sha512'
+        algorithm: 'md5', //'md5', 'sha1', 'sha256', 'sha512'
+        crypto: null
     };
 
     this.opt = extend({}, opt, options);
+
+    //alias
+    this.opt.algorithm = this.opt.crypto || this.opt.algorithm;
+
     this.stampCache = {};
 }
 
 Stamper.compute = compute;
+Stamper.getSupportedAlgorithms = getSupportedAlgorithms;
 
 Stamper.prototype = {
     /**
@@ -103,9 +115,9 @@ Stamper.prototype = {
      * @return {String}         Stamp string if file exists,or else null.
      */
     compute: function(path, relative, cb) {
-        var filepath, digest, algorithm = this.opt.crypto || this.opt.algorithm;
+        var filepath, digest, algorithm = this.opt.algorithm;
 
-        path = String(path);//Number cause path.join throwing error
+        path = String(path); //Number cause path.join throwing error
         //relative could be omitted.
         if (2 === arguments.length && 'function' === typeof relative) {
             cb = relative;

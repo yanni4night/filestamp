@@ -3,6 +3,7 @@
 var grunt = require('grunt');
 var fs = require('fs');
 var path = require('path');
+var async = require('async');
 var Stamper = require('../index');
 
 /*
@@ -86,8 +87,44 @@ exports.stamp = {
         });
         test.doesNotThrow(function() {
             test.deepEqual(null, s.compute(Date.now()), 'Stamp could be null if error ignored');
-        },'No error throwing if error ignored');
+        }, 'No error throwing if error ignored');
 
         test.done();
+    },
+    all: function(test) {
+        var algorithms = Stamper.getSupportedAlgorithms();
+        var TESTFILE = './package.json';
+
+        test.expect(4 * algorithms.length);
+
+        var tasks = algorithms.map(function(algo) {
+            return (function(algo) {
+                return function(cb) {
+                    var s = new Stamper({
+                        algorithm: algo
+                    });
+
+                    var s1 = s.compute(TESTFILE);
+                    var s2 = Stamper.compute(TESTFILE, algo);
+
+                    test.deepEqual(s1, s2, 'indirectly and directly should equal under sync using ' + algo);
+
+                    async.parallel([function(callback) {
+                        s.compute(TESTFILE, callback);
+                    }, function(callback) {
+                        Stamper.compute(TESTFILE, algo, callback);
+                    }], function(err, data) {
+                        test.ok(!err, 'No error should occure under async using ' + algo);
+                        test.deepEqual(data[0], data[1], 'indirectly and directly should equal under sync using ' + algo);
+                        test.deepEqual(data[0], s1, 'indirectly/directly and async/sync should equal to each other using ' + algo);
+                        cb(err);
+                    });
+
+                };
+            })(algo);
+        });
+        async.parallel(tasks, function(err) {
+            test.done();
+        });
     }
 };
