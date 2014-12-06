@@ -12,10 +12,33 @@ usage
     var Stamper = require('filestamp');
     var stamper = new Stamper({crypto:'md5', baseDir:'.'});
     stamper.compute('./package.json');
-    stamper.compute('./stamp_test.js',"test");
+    stamper.compute('./stamp_test.js',"./test");
     //Or call compute directly
     Stamper.compute('./package.json','sha1');
+    
+    //Or under async mode
+    stamper.compute('./package.json',[relative,]function(err, digest){})
+    Stamper.compute('./package.json',[relative,]function(err, digest){})
 
+options
+=========
+######baseDir: '.'
+File path are relative to if no relative argument exist.
+
+######ignoreError: false
+
+If set to true,no error will be throwed under sync mode.
+
+######cache: true
+
+If cache the digest,which make returning same value calling on a filepath again.
+
+######crypto: 'md5' 
+'md5', 'sha1', 'sha256', 'sha512'
+
+######algorithm: 'md5' 
+
+Alias for `crypto`.
 
 [npm-url]: https://npmjs.org/package/filestamp
 [downloads-image]: http://img.shields.io/npm/dm/filestamp.svg

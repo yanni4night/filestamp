@@ -80,13 +80,13 @@ function compute(filepath, algorithm, cb) {
  */
 function Stamper(options) {
     var opt = {
-        ignoreMissing: false,
+        ignoreError: false,
         baseDir: '.',
         cache: true,
         crypto: 'md5' //'md5', 'sha1', 'sha256', 'sha512'
     };
 
-    this.opt = extend(opt, options || {});
+    this.opt = extend({}, opt, options);
     this.stampCache = {};
 }
 
@@ -103,19 +103,23 @@ Stamper.prototype = {
      * @return {String}         Stamp string if file exists,or else null.
      */
     compute: function(path, relative, cb) {
-        var filepath, digest;
+        var filepath, digest, algorithm = this.opt.crypto || this.opt.algorithm;
 
+        path = String(path);//Number cause path.join throwing error
+        //relative could be omitted.
         if (2 === arguments.length && 'function' === typeof relative) {
             cb = relative;
             relative = null;
         }
 
+        //Join real file path.
         if ('string' !== typeof relative && !(relative instanceof String)) {
             filepath = sysPath.join(this.opt.baseDir, path);
         } else {
             filepath = sysPath.join(relative, path);
         }
 
+        //From cache
         if (this.opt.cache && this.stampCache[filepath]) {
             if (cb) {
                 cb(null, this.stampCache[filepath]);
@@ -126,7 +130,7 @@ Stamper.prototype = {
         }
 
         if (cb) {
-            compute(filepath, this.opt.crypto || this.opt.algorithm, function(error, digest) {
+            compute(filepath, algorithm, function(error, digest) {
                 if (digest && this.opt.cache) {
                     this.stampCache[filepath] = digest;
                 }
@@ -135,8 +139,19 @@ Stamper.prototype = {
             return;
         }
 
-        digest = compute(filepath, this.opt.crypto || this.opt.algorithm);
+        if (this.opt.ignoreError) {
+            try {
+                digest = compute(filepath, algorithm);
+            } catch (e) {
+                //When error could be ignored,we just return null.
+                return null;
+            }
+        } else {
+            //If error could not be ignored,an error may be throwed from here.
+            digest = compute(filepath, algorithm);
+        }
 
+        //Do cache
         if (digest && this.opt.cache) {
             this.stampCache[filepath] = digest;
         }

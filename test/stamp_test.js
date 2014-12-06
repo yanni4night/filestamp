@@ -73,11 +73,21 @@ exports.stamp = {
         });
 
     },
-    missing: function(test) {
+    error: function(test) {
         test.expect(1);
         test.throws(function() {
             Stamper.compute(Date.now())
         }, 'should throw error if file missing or something error occured')
+        test.done();
+    },
+    ignoreError: function(test) {
+        var s = new Stamper({
+            ignoreError: true
+        });
+        test.doesNotThrow(function() {
+            test.deepEqual(null, s.compute(Date.now()), 'Stamp could be null if error ignored');
+        },'No error throwing if error ignored');
+
         test.done();
     }
 };
