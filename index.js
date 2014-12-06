@@ -28,9 +28,15 @@ var sysPath = require('path');
  * @return {String}
  */
 function compute(filepath, algorithm) {
-    var digest, content = fs.readFileSync(filepath);
+    var digest, content;
 
-    digest = crypto.createHash(algorithm || 'md5').update(content).digest('hex');
+    try {
+        content = fs.readFileSync(filepath);
+        digest = crypto.createHash(algorithm || 'md5').update(content).digest('hex');
+    } catch (e) {
+        return null;
+    }
+
     /*jshint bitwise:false*/
     return (parseInt(digest, 16) % 1e6) | 0;
 }
@@ -67,28 +73,24 @@ Stamper.prototype = {
     compute: function(path, relative) {
         var filepath, digest;
 
-        try {
-
-            if ('string' !== typeof relative && !(relative instanceof String)) {
-                filepath = sysPath.join(this.opt.baseDir, path);
-            } else {
-                filepath = sysPath.join(relative, path);
-            }
-
-            if (this.opt.cache && this.stampCache[filepath]) {
-                return this.stampCache[filepath];
-            }
-
-            digest = compute(filepath);
-
-            if (this.opt.cache) {
-                this.stampCache[filepath] = digest;
-            }
-
-            return digest;
-        } catch (e) {
-            return null;
+        if ('string' !== typeof relative && !(relative instanceof String)) {
+            filepath = sysPath.join(this.opt.baseDir, path);
+        } else {
+            filepath = sysPath.join(relative, path);
         }
+
+        if (this.opt.cache && this.stampCache[filepath]) {
+            return this.stampCache[filepath];
+        }
+
+        digest = compute(filepath);
+
+        if (this.opt.cache && digest) {
+            this.stampCache[filepath] = digest;
+        }
+
+        return digest;
+
     }
 };
 

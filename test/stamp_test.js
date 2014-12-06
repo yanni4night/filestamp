@@ -61,5 +61,10 @@ exports.stamp = {
         test.ok(!!Stamper.compute('package.json'), 'Stamp should be computed in relative path');
         test.ok(!!Stamper.compute(path.join(__dirname, '..', 'package.json')), 'Stamp should be computed in absolute path');
         test.done();
+    },
+    missing: function(test) {
+        test.expect(1);
+        test.deepEqual(null, Stamper.compute(Date.now()), 'should get null if file missing')
+        test.done();
     }
 };
