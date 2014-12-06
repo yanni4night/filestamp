@@ -36,6 +36,9 @@ function getSupportedAlgorithms() {
  * @since 0.1.5
  */
 function getDigest(content, algorithm) {
+    if (ALGORITHMS.indexOf(algorithm) < 0) {
+        throw new Error(algorithm + ' is not one of ' + ALGORITHMS);
+    }
     var digest = crypto.createHash(algorithm).update(content).digest('hex');
     /*jshint bitwise:false*/
     return (parseInt(digest, 16) % 1e6) | 0;

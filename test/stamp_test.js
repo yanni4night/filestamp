@@ -34,8 +34,9 @@ exports.stamp = {
     normal: function(test) {
         var s = new Stamper();
         //sync
-        var stamp = s.compute('./package.json', './');
-        test.ok(!!stamp, 'Stamp should be computed');
+        var stamp = s.compute('./package.json');
+        test.ok(!!stamp, 'Stamp should be computed using baseDir');
+        test.ok(!!s.compute('./stamp_test.js', './test'), 'Stamp should be computed using relative');
         //async
         s.compute('package.json', function(err, digest) {
             test.deepEqual(digest, stamp, 'Stamp should get the same under async mode');
@@ -89,6 +90,12 @@ exports.stamp = {
             test.deepEqual(null, s.compute(Date.now()), 'Stamp could be null if error ignored');
         }, 'No error throwing if error ignored');
 
+        test.done();
+    },
+    algorithm: function(test) {
+        test.throws(function() {
+            Stamper.compute('./package.json', 'illegal-algorithm');
+        }, 'Error should be throwed if using an illegal algorithm');
         test.done();
     },
     all: function(test) {
