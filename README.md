@@ -33,12 +33,12 @@ If set to true,no error will be throwed under sync mode.
 
 If cache the digest,which make returning same value calling on a filepath again.
 
-######crypto: 'md5' 
+######algorithm: 'md5' 
 'md5', 'sha1', 'sha256', 'sha512'
 
-######algorithm: 'md5' 
+######crypto: 'md5' 
 
-Alias for `crypto`.
+Alias for `algorithm`.
 
 [npm-url]: https://npmjs.org/package/filestamp
 [downloads-image]: http://img.shields.io/npm/dm/filestamp.svg
