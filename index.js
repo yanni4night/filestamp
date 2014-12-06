@@ -28,11 +28,11 @@ var sysPath = require('path');
  * @return {String}
  */
 function compute(filepath, algorithm) {
-    var md5, content = fs.readFileSync(filepath);
+    var digest, content = fs.readFileSync(filepath);
 
-    md5 = crypto.createHash(algorithm || 'md5').update(content).digest('hex');
+    digest = crypto.createHash(algorithm || 'md5').update(content).digest('hex');
     /*jshint bitwise:false*/
-    return (parseInt(md5, 16) % 1e6) | 0;
+    return (parseInt(digest, 16) % 1e6) | 0;
 }
 
 /**
@@ -65,7 +65,7 @@ Stamper.prototype = {
      * @return {String}         Stamp string if file exists,or else null.
      */
     compute: function(path, relative) {
-        var filepath, md5;
+        var filepath, digest;
 
         try {
 
@@ -79,13 +79,13 @@ Stamper.prototype = {
                 return this.stampCache[filepath];
             }
 
-            md5 = compute(filepath);
+            digest = compute(filepath);
 
             if (this.opt.cache) {
-                this.stampCache[filepath] = md5;
+                this.stampCache[filepath] = digest;
             }
 
-            return md5;
+            return digest;
         } catch (e) {
             return null;
         }
