@@ -16,7 +16,7 @@
     "filestamp"
   ],
   "engines": {
-    "node": ">=6.0.0"
+    "node": ">=0.10.0"
   },
   "author": "yanni4night@gmail.com",
   "license": "MIT",

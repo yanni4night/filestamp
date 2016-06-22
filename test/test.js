@@ -11,45 +11,45 @@
  */
 'use strict';
 
-const assert = require('assert');
-const {
-    filestamp,
-    contentstamp
-} = require('../');
+var assert = require('assert');
+var t = require('../');
+var filestamp = t.filestamp;
+var contentstamp = t.contentstamp;
+
 require('colors');
 
-describe('filestamp', () => {
-    describe('async', () => {
-        it('should return filename after stamped', done => {
-            filestamp(`${__dirname}/test.js`, (err, result) => {
+describe('filestamp', function() {
+    describe('async', function() {
+        it('should return filename after stamped', function(done) {
+            filestamp(__dirname + '/test.js', function(err, result) {
                 assert.ok(!err);
                 console.log(result.filename.green);
                 done();
             });
         });
     });
-    describe('sync', () => {
-        it('should return filename after stamped', () => {
-            const result = filestamp.sync(`${__dirname}/test.js`);
+    describe('sync', function() {
+        it('should return filename after stamped', function() {
+            var result = filestamp.sync(__dirname + '/test.js');
             console.log(result.filename.green);
             assert.ok(!!(result && result.filename));
         });
     });
 });
 
-describe('contentstamp', () => {
-    describe('async', done => {
-        it('should return filename after stamped', done => {
-            contentstamp('var a=1;', 'logo.png', (err, result) => {
+describe('contentstamp', function() {
+    describe('async', function(done) {
+        it('should return filename after stamped', function(done) {
+            contentstamp('var a=1;', 'logo.png', function(err, result) {
                 assert.ok(!err);
                 console.log(result.filename.green);
                 done();
             });
         });
     });
-    describe('sync', () => {
-        it('should return filename after stamped', () => {
-            const result = contentstamp.sync('var a=1;', 'logo.png');
+    describe('sync', function() {
+        it('should return filename after stamped', function() {
+            var result = contentstamp.sync('var a=1;', 'logo.png');
             console.log(result.filename.green);
             assert.ok(!!(result && result.filename));
         });

@@ -12,26 +12,26 @@
  */
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
-const crypto = require('crypto');
+var fs = require('fs');
+var path = require('path');
+var crypto = require('crypto');
 
-const getDigest = content => {
-    let digest = crypto.createHash('md5').update(content).digest('hex');
-    return  (parseInt(digest, 16) % 1e10).toString(36);
+var getDigest = function(content) {
+    var digest = crypto.createHash('md5').update(content).digest('hex');
+    return (parseInt(digest, 16) % 1e10).toString(36);
 };
 
-const rename = (filename, stamp) => {
-    const ext = path.extname(filename);
-    return `${stamp}${ext}`;
+var rename = function(filename, stamp) {
+    var ext = path.extname(filename);
+    return stamp + ext;
 };
 
-const filestamp = exports.filestamp = (filename, cb) => {
-    fs.readFile(filename, 'utf-8', (err, content) => {
+var filestamp = exports.filestamp = function(filename, cb) {
+    fs.readFile(filename, 'utf-8', function(err, content) {
         if (err) {
             cb(err);
         } else {
-            const stamp = getDigest(content);
+            var stamp = getDigest(content);
             cb(null, {
                 filename: rename(filename, stamp)
             });
@@ -39,23 +39,23 @@ const filestamp = exports.filestamp = (filename, cb) => {
     });
 };
 
-filestamp.sync = filename => {
-    const content = fs.readFileSync(filename, 'utf-8');
-    const stamp = getDigest(content);
+filestamp.sync = function(filename) {
+    var content = fs.readFileSync(filename, 'utf-8');
+    var stamp = getDigest(content);
     return {
         filename: rename(filename, stamp)
     };
 };
 
-const contentstamp = exports.contentstamp = (content, filename, cb) => {
-    const stamp = getDigest(content);
+var contentstamp = exports.contentstamp = function(content, filename, cb) {
+    var stamp = getDigest(content);
     cb(null, {
         filename: rename(filename, stamp)
     });
 };
 
-contentstamp.sync = (content, filename) => {
-    const stamp = getDigest(content);
+contentstamp.sync = function(content, filename) {
+    var stamp = getDigest(content);
     return {
         filename: rename(filename, stamp)
     };
