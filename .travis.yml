@@ -1,10 +1,10 @@
 language: node_js
 before_install:
-  - npm install -g grunt-cli
-  - npm uninstall grunt # https://github.com/npm/npm/issues/3958
+sudo: false
 node_js:
-  - "0.10" 
-  - "0.11" 
-after_script:
-  - npm install -g istanbul
-  - npm run coveralls
+  - "0.10"
+  - "0.12"
+  - "4"
+  - "5"
+  - "6"
+  - stable
