@@ -43,6 +43,7 @@ describe('contentstamp', function() {
             contentstamp('var a=1;', 'logo.png', function(err, result) {
                 assert.ok(!err);
                 console.log(result.filename.green);
+                assert.deepEqual(result.filename, '145xwjk.png');
                 done();
             });
         });
@@ -51,7 +52,7 @@ describe('contentstamp', function() {
         it('should return filename after stamped', function() {
             var result = contentstamp.sync('var a=1;', 'logo.png');
             console.log(result.filename.green);
-            assert.ok(!!(result && result.filename));
+            assert.deepEqual(result.filename, '145xwjk.png');
         });
     });
 
